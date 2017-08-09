@@ -22,7 +22,7 @@ object Main {
     val configFile = getClass.getClassLoader.getResource("application.conf").getFile
     val config = ConfigFactory.parseFile(new File(configFile))
     val system = ActorSystem("GalaxyChatClientSystem", config)
-    val local = system.actorOf(Props[Client])
+    val client = system.actorOf(Props[Client])
 
   }
 
