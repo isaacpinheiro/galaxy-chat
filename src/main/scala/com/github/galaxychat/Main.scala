@@ -13,6 +13,7 @@ case class Message(val nick: String, val content: String)
 case class Response(val content: String)
 case object ListUsers
 case class Input(val content: String)
+case class Nick(val oldNick: String, val newNick: String)
 
 class Client extends Actor {
 
@@ -43,7 +44,8 @@ class Client extends Actor {
         }
 
         case (h :: t) if h == "/nick" => {
-
+          server ! Nick(nick, t.head)
+          nick = t.head
         }
 
         case (h :: t) if h == "/kill" => {
