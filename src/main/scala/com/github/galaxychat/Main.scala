@@ -11,7 +11,7 @@ case class User(val nick: String, val addr: ActorRef)
 case class Connection(val user: User)
 case class Message(val nick: String, val content: String)
 case class Response(val content: String)
-case class ListUsers(val nick: String)
+case object ListUsers
 case class Input(val content: String)
 
 class Client extends Actor {
@@ -35,7 +35,7 @@ class Client extends Actor {
       msg.split(" ").toList match {
 
         case (h :: _) if h == "/list" => {
-          server ! ListUsers(nick)
+          server ! ListUsers
         }
 
         case (h :: _) if h == "/quit" => {
@@ -71,10 +71,9 @@ object Main {
     val system = ActorSystem("GalaxyChatClientSystem", config)
     val client = system.actorOf(Props[Client])
 
-    println("\n\nGalaxy Chat\n")
+    println("\nGalaxy Chat\n")
     print("Write your nick: ")
     val nick = readLine
-    println("")
 
     client ! Connection(User(nick, client))
 
