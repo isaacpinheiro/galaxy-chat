@@ -12,8 +12,9 @@ case class Connection(val user: User)
 case class Message(val nick: String, val content: String)
 case class Response(val content: String)
 case object ListUsers
-case class Input(val content: String)
 case class Nick(val oldNick: String, val newNick: String)
+case class Quit(val nick: String)
+case class Input(val content: String)
 
 class Client extends Actor {
 
@@ -40,7 +41,7 @@ class Client extends Actor {
         }
 
         case (h :: _) if h == "/quit" => {
-
+          server ! Quit(nick)
         }
 
         case (h :: t) if h == "/nick" => {
@@ -79,10 +80,20 @@ object Main {
 
     client ! Connection(User(nick, client))
 
-    while (true) {
+    def loop() {
+
       val msg = readLine
       client ! Input(msg)
+
+      if (msg != "/quit") loop()
+      else {
+        system.stop(client)
+        system.terminate()
+      }
+
     }
+
+    loop()
 
   }
 
