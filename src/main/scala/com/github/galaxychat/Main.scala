@@ -14,6 +14,8 @@ case class Response(val content: String)
 case object ListUsers
 case class Nick(val oldNick: String, val newNick: String)
 case class Quit(val nick: String)
+case class Kill(val nick: String)
+case object Killed
 case class Input(val content: String)
 
 class Client extends Actor {
@@ -30,6 +32,11 @@ class Client extends Actor {
 
     case Response(msg) => {
       println(msg)
+    }
+
+    case Killed => {
+      context.stop(self)
+      println("Disconnected - killed.")
     }
 
     case Input(msg) => {
@@ -50,7 +57,7 @@ class Client extends Actor {
         }
 
         case (h :: t) if h == "/kill" => {
-
+          server ! Kill(t.head)
         }
 
         case _ => {
